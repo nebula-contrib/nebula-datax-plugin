@@ -21,6 +21,7 @@ public class App
         while (res.next()) {
             String name = res.getString("name");
             int age = res.getInt(2);
+            // 生成业务信息
             System.out.println(name + " : " + age);
         }
         // 插入节点

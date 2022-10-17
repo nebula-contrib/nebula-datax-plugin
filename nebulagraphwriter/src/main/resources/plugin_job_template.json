@@ -1,0 +1,27 @@
+{
+  "name": "nebulagraphwriter",
+  "parameter": {
+    "username": "root",
+    "password": "nebula",
+    "column": [
+      ""
+    ],
+    "connection": [
+      {
+        "table": [
+          ""
+        ],
+        "edgeType": [
+          {
+            "srcTag": "",
+            "srcPrimaryKey": "",
+            "dstTag": "",
+            "dstPrimaryKey": ""
+          }
+        ],
+        "jdbcUrl": "jdbc://nebula:<space_name>"
+      }
+    ],
+    "batchSize": 1000
+  }
+}

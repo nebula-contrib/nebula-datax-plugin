@@ -1,0 +1,9 @@
+{
+  "name": "nebulagraphwriter",
+  "class": "com.alibaba.datax.plugin.writer.nebulagraphwriter.NebulaGraphWriter",
+  "description": {
+    "useScene": "data migration to nebulaGraph",
+    "mechanism": "use nebula-jdbc driver to write data."
+  },
+  "developer": "support@nebula.vesoft.com"
+}

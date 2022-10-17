@@ -1,0 +1,55 @@
+{
+  "job": {
+    "content": [
+      {
+        "reader": {
+          "name": "streamreader",
+          "parameter": {
+            "column": [
+              {
+                "type": "string",
+                "value": "zhangsan"
+              },
+              {
+                "type": "long",
+                "value": 25
+              }
+            ],
+            "sliceRecordCount": 1
+          }
+        },
+        "writer": {
+          "name": "nebulagraphwriter",
+          "parameter": {
+            "username": "root",
+            "password": "nebula",
+            "column": [
+              "name",
+              "age"
+            ],
+            "connection": [
+              {
+                "table": [
+                  "player"
+                ],
+                "edgeType": [
+                  {
+                    "srcTag": "player", "srcPrimaryKey": "srcPlayerName",
+                    "dstTag": "player", "dstPrimaryKey": "dstPlayerName"
+                  }
+                ],
+                "jdbcUrl": "jdbc:nebula://cba"
+              }
+            ],
+            "batchSize": 100
+          }
+        }
+      }
+    ],
+    "setting": {
+      "speed": {
+        "channel": 1
+      }
+    }
+  }
+}

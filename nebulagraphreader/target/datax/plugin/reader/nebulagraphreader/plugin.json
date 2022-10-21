@@ -1,0 +1,9 @@
+{
+  "name": "nebulagraphreader",
+  "class": "com.alibaba.datax.plugin.reader.nebulagraphreader.NebulaGraphReader",
+  "description": {
+    "useScene": "data migration from nebulaGraph",
+    "mechanism": "use nebula-jdbc driver to read data from nebulaGraph."
+  },
+  "developer": "support@nebula.vesoft.com"
+}

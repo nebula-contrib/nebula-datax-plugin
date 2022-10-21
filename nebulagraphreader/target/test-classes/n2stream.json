@@ -1,0 +1,42 @@
+{
+  "job": {
+    "content": [
+      {
+        "reader": {
+          "name": "nebulagraphreader",
+          "parameter": {
+            "username": "root",
+            "password": "nebula",
+            "connection": [
+              {
+                "table": [
+                  "player"
+                ],
+                "jdbcUrl": [
+                  "jdbc:nebula://cba"
+                ]
+              }
+            ],
+            "column": [
+              "name",
+              "age"
+            ],
+            "where": ""
+          }
+        },
+        "writer": {
+          "name": "streamwriter",
+          "parameter": {
+            "encoding": "UTF-8",
+            "print": true
+          }
+        }
+      }
+    ],
+    "setting": {
+      "speed": {
+        "channel": 1
+      }
+    }
+  }
+}

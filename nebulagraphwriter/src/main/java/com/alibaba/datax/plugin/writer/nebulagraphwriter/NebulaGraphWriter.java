@@ -1,9 +1,11 @@
 package com.alibaba.datax.plugin.writer.nebulagraphwriter;
 
+import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordReceiver;
 import com.alibaba.datax.common.plugin.TaskPluginCollector;
 import com.alibaba.datax.common.spi.Writer;
 import com.alibaba.datax.common.util.Configuration;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,12 +33,33 @@ public class NebulaGraphWriter extends Writer {
             // 获取各种参数并进行基础的验证
 
             // check username
+            String username = this.originalConfig.getString(Key.USERNAME);
+            if (StringUtils.isBlank(username)) {
+                throw DataXException.asDataXException(NebulaGraphWriterErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.USERNAME + "] is not set");
+            }
 
             // check password
+            String passwd = this.originalConfig.getString(Key.PASSWORD);
+            if (StringUtils.isBlank(passwd)) {
+                throw DataXException.asDataXException(NebulaGraphWriterErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.PASSWORD + "] is not set");
+            }
 
             // check connection
-
-            // check column (tdengine 未实现)
+            List<Object> connection = this.originalConfig.getList(Key.CONNECTION);
+            if (connection == null || connection.isEmpty()) {
+                throw DataXException.asDataXException(NebulaGraphWriterErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.CONNECTION + "] is not set");
+            }
+            if (connection.size() > 1)
+                LOG.warn("Connection size is " + connection.size() + " and only connection[0] will be used");
+            Configuration conn = Configuration.from(connection.get(0).toString());
+            String jdbcUrl = conn.getString(Key.JDBC_URL);
+            // check jdbcUrl
+            if (StringUtils.isBlank(jdbcUrl))
+                throw DataXException.asDataXException(NebulaGraphWriterErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.JDBC_URL + "] of connection is not set");
         }
 
         @Override

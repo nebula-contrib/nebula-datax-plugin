@@ -1,6 +1,7 @@
 package com.alibaba.datax.plugin.reader.nebulagraphreader;
 
 import com.alibaba.datax.common.element.*;
+import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordSender;
 import com.alibaba.datax.common.spi.Reader;
 import com.alibaba.datax.common.util.Configuration;
@@ -31,15 +32,44 @@ public class NebulaGraphReader extends Reader {
             this.originalConfig = super.getPluginJobConf();
 
             // check username
+            String username = this.originalConfig.getString(Key.USERNAME);
+            if (StringUtils.isBlank(username)) {
+                throw DataXException.asDataXException(NebulaGraphReaderErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.USERNAME + "] is not set");
+            }
 
             // check password
+            String passwd = this.originalConfig.getString(Key.PASSWORD);
+            if (StringUtils.isBlank(passwd)) {
+                throw DataXException.asDataXException(NebulaGraphReaderErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.PASSWORD + "] is not set");
+            }
 
             // check connection
+            List<Configuration> conns = this.originalConfig.getListConfiguration(Key.CONNECTION);
+            if (conns == null || conns.isEmpty()) {
+                throw DataXException.asDataXException(NebulaGraphReaderErrorCode.REQUIRED_VALUE,
+                        "Parameter [" + Key.CONNECTION + "] is not set");
+            }
 
+            for (int i = 0; i < conns.size(); i++) {
+                Configuration conn = conns.get(i);
                 // check jdbcUrl
-
-            // check table or querySql
-
+                List<Object> jdbcUrlList = conn.getList(Key.JDBC_URL);
+                if (jdbcUrlList == null || jdbcUrlList.isEmpty()) {
+                    throw DataXException.asDataXException(NebulaGraphReaderErrorCode.REQUIRED_VALUE,
+                            "Parameter [" + Key.JDBC_URL + "] of connection [" + (i+1) + "] is not set");
+                }
+                // check table or querySql
+                List<Object> querySqlList = conn.getList(Key.QUERY_SQL);
+                if (querySqlList == null || querySqlList.isEmpty()) {
+                    List<Object> table = conn.getList(Key.TABLE);
+                    if (table == null || table.isEmpty()) {
+                        throw DataXException.asDataXException(NebulaGraphReaderErrorCode.REQUIRED_VALUE,
+                                "Parameter both [" + Key.TABLE + "] and [" + Key.QUERY_SQL + "] of connection[" + (i+1) + "] are note set");
+                    }
+                }
+            }
         }
 
         @Override
@@ -112,14 +142,13 @@ public class NebulaGraphReader extends Reader {
                 NebulaDriver defaultDriver = new NebulaDriver();
                 this.conn = DriverManager.getConnection(jdbcUrl, username, password);
             } catch (Exception e) {
-                throw new RuntimeException(e);
-                // throw DataXException Connection Failed
+                throw DataXException.asDataXException(NebulaGraphReaderErrorCode.CONNECTION_FAILED,
+                        "Parameter [" + Key.JDBC_URL + "] : " + jdbcUrl + "failed to connect due to: " + e.getMessage(), e);
             }
             this.tables = readerSliceConfig.getList(Key.TABLE, String.class);
             this.columns = readerSliceConfig.getList(Key.COLUMN, String.class);
             this.querySql = readerSliceConfig.getList(Key.QUERY_SQL, String.class);
             this.mandatoryEncoding = readerSliceConfig.getString(Key.MANDATORY_ENCODING, "UTF-8");
-            // this.where = readerSliceConfig.getString(Key.WHERE, 某个恒成立的条件置于nGql中);
             this.where = readerSliceConfig.getString(Key.WHERE);
         }
 
@@ -167,6 +196,7 @@ public class NebulaGraphReader extends Reader {
         }
 
         // 内置查询方法：Tag 默认采用LOOKUP语句
+        // TODO
         public String readQueryTagBynGql(String tag, boolean isWhereSupported, int queryMode) {
             String whr = "";
             if (isWhereSupported) {
@@ -177,7 +207,8 @@ public class NebulaGraphReader extends Reader {
                     return queryTagByLookUpnGql(tag, whr);
                 }
                 case MATCH: {
-
+                    // throw Exception
+                    throw DataXException.asDataXException(NebulaGraphReaderErrorCode.UNSUPPORTED_QUERY_MODE, "Unsupported query mode match");
                 }
                 case GO: {
 
@@ -227,7 +258,7 @@ public class NebulaGraphReader extends Reader {
                     }
                 }
             } catch (SQLException | UnsupportedEncodingException | InvalidValueException e) {
-                throw new RuntimeException(e);
+                throw DataXException.asDataXException(NebulaGraphReaderErrorCode.RUNTIME_EXCEPTION, e.getMessage(), e);
             }
             return record;
         }

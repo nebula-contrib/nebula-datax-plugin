@@ -131,9 +131,8 @@ public class DefaultDataHandler implements DataHandler {
                 recordBuffer.clear();
             }
 
-        } catch (Exception ignored) {
-            // 补: 抛出异常: RUNTIME_EXCEPTION
-
+        } catch (Exception e) {
+            throw DataXException.asDataXException(NebulaGraphWriterErrorCode.RUNTIME_EXCEPTION, e.getMessage());
         }
 
         if (affectedRows != count) {
@@ -209,7 +208,7 @@ public class DefaultDataHandler implements DataHandler {
                 String colVal = buildColumnValue(colMeta, record);
                 if (i == 0) {
                     String vid = table + "_" + colVal.substring(1,colVal.length()-1); // 生成VID
-                    // 此处需要测试一下vid是否需要加"\""转义字符(需要添加)
+
                     sb.append("\"").append(vid).append("\"").append(":");
                     sb.append("(").append(colVal);
                 }
@@ -335,15 +334,12 @@ public class DefaultDataHandler implements DataHandler {
         return session;
     }
 
-    // 此处有异常未处理
-    private int indexOf(String colName) throws Exception { // 抛出DataXException
+    private int indexOf(String colName) throws DataXException {
         for (int i = 0; i < columns.size(); i++) {
             if (columns.get(i).equals(colName))
                 return i;
         }
-        throw new Exception("DataXException cannot find col");
-        /*
-        throw DataXException.asDataXException(,
-                "cannot find col: " + colName + " in columns: " + columns);*/
+        throw DataXException.asDataXException(NebulaGraphWriterErrorCode.RUNTIME_EXCEPTION,
+                "Cannot find col: " + colName + " in columns: " + columns);
     }
 }

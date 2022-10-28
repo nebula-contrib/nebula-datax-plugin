@@ -47,11 +47,12 @@ public class SchemaManager {
             // 防止用户配置文件中出现不存在的表
             for (String tbname : tables) {
                 if (!tableMetas.containsKey(tbname)) {
-                    // throw DataXException.asException();
+                    throw DataXException.asDataXException(NebulaGraphWriterErrorCode.RUNTIME_EXCEPTION,
+                            "MetaData of table " + tbname + "is empty!");
                 }
             }
         } catch (IOErrorException | UnsupportedEncodingException e) {
-            throw new RuntimeException(e); // 统一为DataXException
+            throw DataXException.asDataXException(NebulaGraphWriterErrorCode.RUNTIME_EXCEPTION, e.getMessage());
         }
         return tableMetas;
     }
@@ -81,9 +82,11 @@ public class SchemaManager {
                 }
                 else {
                     // throw DataXException: 不存在当前table
+                    throw DataXException.asDataXException(NebulaGraphWriterErrorCode.ILLEGAL_VALUE,
+                            "GraphSpace doesn't exist table " + table);
                 }
             } catch (IOErrorException | UnsupportedEncodingException e) {
-                throw new RuntimeException(e); // 此处需更正
+                throw DataXException.asDataXException(NebulaGraphWriterErrorCode.RUNTIME_EXCEPTION, e.getMessage());
             }
 
             if (colMetaList.isEmpty()) {

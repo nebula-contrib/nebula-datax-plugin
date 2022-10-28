@@ -5,11 +5,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class Mysql2NebulaGraphTest {
+public class Mysql2StreamTest {
 
     @Test
-    public void mysql2nebulaGraph() throws Throwable {
-        String[] params = {"-mode", "standalone", "-jobid", "-1", "-job", "src/test/resources/mysql2nebula.json"};
+    public void mysql2stream() throws Throwable {
+        String[] params = {"-mode", "standalone", "-jobid", "-1", "-job", "src/test/resources/mysql2stream.json"};
         System.setProperty("datax.home", "../target/datax/datax");
         Engine.entry(params);
     }

@@ -1,0 +1,55 @@
+{
+  "job": {
+    "setting": {
+      "speed": {
+        "channel": 1
+      }
+    },
+    "content": [
+      {
+        "reader": {
+          "name": "nebulagraphreader",
+          "parameter": {
+            "username": "root",
+            "password": "nebula",
+            "connection": [
+              {
+                "table": [
+                  "player"
+                ],
+                "jdbcUrl": [
+                  "jdbc:nebula://cba"
+                ]
+              }
+            ],
+            "column": [
+              "name",
+              "age"
+            ],
+            "where": ""
+          }
+        },
+        "writer": {
+          "name": "mysqlwriter",
+          "parameter": {
+            "writeMode": "insert",
+            "username": "root",
+            "password": "root1234",
+            "column": [
+              "name",
+              "age"
+            ],
+            "connection": [
+              {
+                "jdbcUrl": "jdbc:mysql://127.0.0.1:3306/graph?useSSL=false",
+                "table": [
+                  "player"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
